@@ -16,7 +16,8 @@ public class Goal : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D( Collider2D other ) {
-		Debug.Log ("winning!");
-		SceneManager.LoadScene ("PlayerVictory");
+		if (other.tag == "GravityTarget") {
+			SceneManager.LoadScene ("PlayerVictory");
+		}
 	}
 }
