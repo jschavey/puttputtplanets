@@ -28,13 +28,17 @@ public class GravityBody : MonoBehaviour {
 	
 		if (this.mouseDown) {
 			this.time++;
-		} else {
+        } else {
 			if (this.time > 0) {
 				this.time--;
 			}
 		}
 
-		this.scalar = 10000/(1 + Mathf.Exp(-1*(this.time - 7)));
+        //Make click visualization follow this object
+        if (this.clickVisualization != null)
+            this.clickVisualization.transform.position = this.transform.position;
+
+        this.scalar = 10000/(1 + Mathf.Exp(-1*(this.time - 7)));
 				
 		target.GetComponent< Rigidbody2D >().AddForce(v.normalized * ( this.mass * target.mass * (this.scalar/10 ) ) / Mathf.Pow( dist, 2 ) );
 	}
@@ -47,16 +51,18 @@ public class GravityBody : MonoBehaviour {
         {
             this.clickVisualization = Instantiate(visualizationPrototype, transform.position, new Quaternion(0, 0, 0, 0));
             this.visualizationPrototype = null;
-        }
 
-        //Trigger visualization
-        if (this.clickVisualization != null)
-        {
             if (this.rend == null)
                 this.rend = this.GetComponent<Renderer>();
 
             float radius = this.rend.bounds.extents.x;
-            this.clickVisualization.setMaxRadius(radius);
+            this.clickVisualization.setAdjustedScale(radius);
+
+        }
+
+        //Trigger visualization
+        if (this.clickVisualization != null)
+        {            
             this.clickVisualization.transform.position = this.transform.position;
             this.clickVisualization.Grow();
         }

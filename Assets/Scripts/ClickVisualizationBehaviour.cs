@@ -7,28 +7,29 @@ public class ClickVisualizationBehaviour : MonoBehaviour {
     protected int ticksShown;
     protected bool grow = false;
     protected Renderer rend;
+    protected float oldRadius = 0;
 
-    public float maxRadius { get; }
+    public float adjustedScale { get; set; }
 
-    public ClickVisualizationBehaviour setMaxRadius(float radius)
+    public ClickVisualizationBehaviour setAdjustedScale(float radius)
     {
-        /*
-        if (this.rend == null)
-            this.rend = this.GetComponent<Renderer>();
+        this.transform.localScale = Vector2.one;
 
         //Treat this object as round
-        float oldRadius = this.rend.bounds.extents.x;
-        float scale = oldRadius != 0 ? radius / oldRadius : 0;
+        if (this.oldRadius == 0)
+            this.oldRadius = Mathf.Ceil((this.rend.bounds.extents.x + this.rend.bounds.extents.y) / 2);
 
-        Debug.Log("scale:" + scale);
+        float scale = this.oldRadius != 0 ? radius / this.oldRadius : 0;
+
+        Debug.Log("scale:" + scale + " oldRadius:" + this.oldRadius + " radius: " + radius);
         
-        this.transform.localScale = new Vector2(scale, scale);
-        */
+        //this.transform.localScale = new Vector2(radius, radius);
+        this.adjustedScale = scale;
 
         return this;
     }
 
-    const int ticksToMaxSize = 30; //60 ticks to reach maximum size
+    const int ticksToMaxSize = 30; //60 ticks pre frame
 
     // Use this for initialization
     void Start() {
@@ -36,6 +37,12 @@ public class ClickVisualizationBehaviour : MonoBehaviour {
 
         //Hide on construction
         //this.srend.enabled = false;
+    }
+
+    void Awake()
+    {
+        if (this.rend == null)
+            this.rend = this.GetComponent<Renderer>();
     }
 
     // Update is called once per frame
@@ -57,7 +64,7 @@ public class ClickVisualizationBehaviour : MonoBehaviour {
                     this.ticksShown = 0;
             }
 
-            float scale = Mathf.Sin(this.ticksShown * 2f * 3.14159f / ticksToMaxSize) + 0.33f;
+            float scale = (this.adjustedScale + 0.5f) * (Mathf.Abs(Mathf.Sin(this.ticksShown * (2f * 3.14159f) / ticksToMaxSize)) + 0.15f);
 
             this.transform.localScale = new Vector2(scale * this.ticksShown / ticksToMaxSize, scale * this.ticksShown / ticksToMaxSize);
         }
