@@ -12,6 +12,7 @@ public class GravityBody : MonoBehaviour {
     protected ClickVisualizationBehaviour clickVisualization;
 
     protected Renderer rend;
+    protected AudioSource audio;
 
 	public int mass = 1;
 	public float scalar = 1.0f;
@@ -22,6 +23,11 @@ public class GravityBody : MonoBehaviour {
 	// Use this for initialization
 	void Start () {}
   
+    void Awake()
+    {
+        this.audio = this.GetComponent<AudioSource>();
+    }
+
 	// Update is called once per frame
 	void FixedUpdate () {
 		//	Start preliminary calculations needed for determing gravitational force
@@ -78,7 +84,8 @@ public class GravityBody : MonoBehaviour {
         }
 
         //Trigger sfx
-        AudioSource audio = this.GetComponent<AudioSource>();
+        audio.pitch = 1.5f;
+        audio.loop = true;
         audio.Play();
 	}
 
@@ -93,8 +100,10 @@ public class GravityBody : MonoBehaviour {
         }
 
         //Trigger sfx
-        AudioSource audio = this.GetComponent<AudioSource>();
         audio.Stop();
+        audio.pitch = -1.5f; //Reverse it
+        audio.loop = false;
+        audio.Play();
     }
 
 	void Update() {
