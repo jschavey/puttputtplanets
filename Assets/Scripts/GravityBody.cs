@@ -8,7 +8,7 @@ public class GravityBody : MonoBehaviour {
 	private static int _diff = 0;	//	0 = easy, 1 = hard
     private GazeAware _gazeAware;
 
-	public GravityTarget target;
+    public GravityTarget target;
 
     public ClickVisualizationBehaviour visualizationPrototype; //We will make a copy of this instance
     protected ClickVisualizationBehaviour clickVisualization;
@@ -21,6 +21,7 @@ public class GravityBody : MonoBehaviour {
 	public int time = 0;
 
 	public bool mouseDown = false;
+    public bool gazeOn = false;
 
 	// Use this for initialization
 	void Start () {
@@ -39,17 +40,21 @@ public class GravityBody : MonoBehaviour {
 		Vector3 v = this.transform.position - target.transform.position;
 
         // "mousedown" if this obj is being looked at
+
+        
         if (_gazeAware.HasGazeFocus && !this.mouseDown)
         {
-            this.OnMouseDown();
+            //this.OnMouseDown();
+            this.OnGazeOn();
         }
         else if (!_gazeAware.HasGazeFocus)
         {
-            this.OnMouseUp();
+            //this.OnMouseUp();
+            this.OnGazeOff();
         }
 
         //	this is for amplification of gravity scalar
-        if (this.mouseDown) {
+        if (this.mouseDown || this.gazeOn) {
 			this.time++;
         } else {
 			if (this.time > 0) {
@@ -120,7 +125,56 @@ public class GravityBody : MonoBehaviour {
         audio.Play();
     }
 
-	void Update() {
+    void OnGazeOn()
+    {
+        this.gazeOn = true;
+
+        //Init click visualization        
+        if (this.clickVisualization == null && this.visualizationPrototype != null)
+        {
+            this.clickVisualization = Instantiate(visualizationPrototype, transform.position, new Quaternion(0, 0, 0, 0));
+            this.visualizationPrototype = null;
+
+            if (this.rend == null)
+                this.rend = this.GetComponent<Renderer>();
+
+            float radius = this.rend.bounds.extents.x;
+            this.clickVisualization.setAdjustedScale(radius);
+
+        }
+
+        //Trigger visualization
+        if (this.clickVisualization != null)
+        {
+            this.clickVisualization.transform.position = this.transform.position;
+            this.clickVisualization.Grow();
+        }
+
+        //Trigger sfx
+        audio.pitch = 1.5f;
+        audio.loop = true;
+        audio.Play();
+    }
+
+    void OnGazeOff()
+    {
+        this.gazeOn = false;
+
+        //Hide click visualization
+        if (this.clickVisualization != null)
+        {
+            if (time > 0)
+                this.clickVisualization.Shrink();
+        }
+
+        //Trigger sfx
+        audio.Stop();
+        audio.pitch = -1.5f; //Reverse it
+        audio.loop = false;
+        audio.Play();
+    }
+
+    void Update() {
 		transform.Rotate (0,0,50*Time.deltaTime); //rotates 50 degrees per second around z axis
 	}
 
