@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Tobii.EyeTracking;
 
 public class GravityBody : MonoBehaviour {
 	private static int _diff = 0;	//	0 = easy, 1 = hard
+    private GazeAware _gazeAware;
 
 	public GravityTarget target;
 
@@ -21,7 +23,9 @@ public class GravityBody : MonoBehaviour {
 	public bool mouseDown = false;
 
 	// Use this for initialization
-	void Start () {}
+	void Start () {
+        _gazeAware = transform.GetChild(0).gameObject.GetComponent<GazeAware>();
+    }
   
     void Awake()
     {
@@ -33,9 +37,19 @@ public class GravityBody : MonoBehaviour {
 		//	Start preliminary calculations needed for determing gravitational force
 		float dist = Vector3.Distance(this.transform.position, target.transform.position);
 		Vector3 v = this.transform.position - target.transform.position;
-	
-		//	this is for amplification of gravity scalar
-		if (this.mouseDown) {
+
+        // "mousedown" if this obj is being looked at
+        if (_gazeAware.HasGazeFocus && !this.mouseDown)
+        {
+            this.OnMouseDown();
+        }
+        else if (!_gazeAware.HasGazeFocus)
+        {
+            this.OnMouseUp();
+        }
+
+        //	this is for amplification of gravity scalar
+        if (this.mouseDown) {
 			this.time++;
         } else {
 			if (this.time > 0) {
