@@ -5,7 +5,10 @@ using UnityEngine;
 public class GravityBody : MonoBehaviour {
 	public GravityTarget target;
 
-    public Sprite clickVisualizationSprite;
+    public ClickVisualizationBehaviour visualizationPrototype; //We will make a copy of this instance
+    protected ClickVisualizationBehaviour clickVisualization;
+
+    protected Renderer rend;
 
 	public int mass = 1;
 	public float scalar = 1.0f;
@@ -15,7 +18,7 @@ public class GravityBody : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {}
-	
+  
 	// Update is called once per frame
 	void FixedUpdate () {
 
@@ -38,22 +41,36 @@ public class GravityBody : MonoBehaviour {
 
 	void OnMouseDown() {
 		this.mouseDown = true;
-        //Create click visualization
-        if (this.clickVisualizationSprite == null)
+
+        //Init click visualization        
+        if (this.clickVisualization == null && this.visualizationPrototype != null)
         {
-            this.clickVisualizationSprite = Instantiate(clickVisualizationSprite, transform.position, new Quaternion(0, 0, 0, 0));
-            //this.clickVisualizationSprite.transform.localScale = 0.1;
+            this.clickVisualization = Instantiate(visualizationPrototype, transform.position, new Quaternion(0, 0, 0, 0));
+            this.visualizationPrototype = null;
         }
 
+        //Trigger visualization
+        if (this.clickVisualization != null)
+        {
+            if (this.rend == null)
+                this.rend = this.GetComponent<Renderer>();
 
+            float radius = this.rend.bounds.extents.x;
+            this.clickVisualization.setMaxRadius(radius);
+            this.clickVisualization.transform.position = this.transform.position;
+            this.clickVisualization.Grow();
+        }
 	}
 
 	void OnMouseUp() {
 		this.mouseDown = false;
-        //Destory click visualization
-        if (this.clickVisualizationSprite != null)
-            this.clickVisualizationSprite = null;
-            //Destroy(this.clickVisualizationSprite);
+
+        //Hide click visualization
+        if (this.clickVisualization != null)
+        {
+            if (time > 0)
+                this.clickVisualization.Shrink();                   
+        }
 	}
 
 	void Update() {
