@@ -5,7 +5,7 @@ using UnityEngine;
 public class GravityBody : MonoBehaviour {
 	public GravityTarget target;
 
-    public GameObject clickVisualization;
+    public Sprite clickVisualizationSprite;
 
 	public int mass = 1;
 	public float scalar = 1.0f;
@@ -38,14 +38,22 @@ public class GravityBody : MonoBehaviour {
 
 	void OnMouseDown() {
 		this.mouseDown = true;
-        //Add click visualization
-        //this.clickVisualization = Instantiate(clickVisualization, transform.position, new Quaternion(0,0,0,0));
+        //Create click visualization
+        if (this.clickVisualizationSprite == null)
+        {
+            this.clickVisualizationSprite = Instantiate(clickVisualizationSprite, transform.position, new Quaternion(0, 0, 0, 0));
+            //this.clickVisualizationSprite.transform.localScale = 0.1;
+        }
+
+
 	}
 
 	void OnMouseUp() {
 		this.mouseDown = false;
         //Destory click visualization
-        //Destroy(this.clickVisualization);
+        if (this.clickVisualizationSprite != null)
+            this.clickVisualizationSprite = null;
+            //Destroy(this.clickVisualizationSprite);
 	}
 
 	void Update() {

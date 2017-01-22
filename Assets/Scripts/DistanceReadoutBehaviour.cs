@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class DistanceReadoutBehaviour : MonoBehaviour {
     public GameObject gravityTarget;
+    public GameObject outOfBoundsIndicator;
 
 	// Use this for initialization
 	void Start () {
@@ -19,6 +20,10 @@ public class DistanceReadoutBehaviour : MonoBehaviour {
 
         //Convert distance to artificial kilometers
         this.GetComponent<Text>().text = (distance * 100).ToString("#") + "km";
-        this.transform.position = this.gravityTarget.transform.position;
+
+        //Follow the out of bounds indicator
+        this.transform.position = this.outOfBoundsIndicator.transform.position;
+
+        Debug.Log(this.transform.position);
     }
 }

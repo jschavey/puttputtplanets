@@ -12,14 +12,12 @@ public class OutOfBoundsBehaviour : MonoBehaviour {
     protected float topConstraint;
     protected float leftConstraint;
     protected float bottomConstraint;
+    protected Renderer rend;
+    protected float buffer;
 
     // Use this for initialization
     void Start () {
-        //Set constraints just outside of screen boundaries, base on object size
-        this.leftConstraint = Camera.main.ScreenToWorldPoint(new Vector2(0.0f, 0.0f)).x;
-        this.bottomConstraint = Camera.main.ScreenToWorldPoint(new Vector2(0.0f, 0.0f)).y;
-        this.rightConstraint = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, 0.0f)).x;
-        this.topConstraint = Camera.main.ScreenToWorldPoint(new Vector2(0.0f, Screen.height)).y;
+        this.rend = this.GetComponent<Renderer>();
     }
 
     void Awake()
@@ -31,8 +29,16 @@ public class OutOfBoundsBehaviour : MonoBehaviour {
 	// Update is called once per frame
     void Update()
     {
+        //Get size of this object
+        this.buffer = this.rend.bounds.extents.x; //Get half of the width
+
+        //Set constraints just outside of screen boundaries, base on object size
+        this.leftConstraint = Camera.main.ScreenToWorldPoint(new Vector2(0.0f, 0.0f)).x + this.buffer;
+        this.bottomConstraint = Camera.main.ScreenToWorldPoint(new Vector2(0.0f, 0.0f)).y + this.buffer;
+        this.rightConstraint = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, 0.0f)).x - this.buffer;
+        this.topConstraint = Camera.main.ScreenToWorldPoint(new Vector2(0.0f, Screen.height)).y - this.buffer;
+
         this.TrackGravityTargetOutOfBounds();
-        this.UpdateDistanceReadout();
     }
 
     protected void TrackGravityTargetOutOfBounds()
@@ -44,7 +50,7 @@ public class OutOfBoundsBehaviour : MonoBehaviour {
 
         //Hide/show child canvas (or canvases)
         foreach (Canvas c in GetComponentsInChildren<Canvas>())
-            c.enabled = sprender.enabled;
+            c.enabled = sprender.enabled;            
 
         if (sprender.enabled)
         {
@@ -101,16 +107,5 @@ public class OutOfBoundsBehaviour : MonoBehaviour {
 
         //Apply scale
         this.transform.localScale = new Vector3(scale, scale, scale);
-    }
-
-    protected void UpdateDistanceReadout()
-    {
-        //Change the text
-        //Text distanceText = this.distanceReadout.GetComponent<Text>();
-        //distanceText.text = Vector2.Distance(this.gravityTarget.transform.position, Vector2.zero).ToString("#.00");
-        //Debug.Log("distance: " + distanceText.text);
-
-        //Make it follow the indicator
-        //this.distanceReadout.transform.localPosition = this.transform.position;
     }
 }
