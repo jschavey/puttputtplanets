@@ -23,7 +23,5 @@ public class DistanceReadoutBehaviour : MonoBehaviour {
 
         //Follow the out of bounds indicator
         this.transform.position = this.outOfBoundsIndicator.transform.position;
-
-        Debug.Log(this.transform.position);
     }
 }
