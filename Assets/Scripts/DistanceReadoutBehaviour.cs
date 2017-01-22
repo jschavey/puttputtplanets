@@ -10,13 +10,15 @@ public class DistanceReadoutBehaviour : MonoBehaviour {
 	void Start () {
         //this.transform.localScale = new Vector2(2f, 2f);
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
+        //Distance from center of screen
         float distance = Vector2.Distance(this.gravityTarget.transform.position, Vector2.zero);
 
         //Convert distance to artificial kilometers
         this.GetComponent<Text>().text = (distance * 100).ToString("#") + "km";
-        this.transform.position = this.gravityTarget.transform.position; //camera.WorldToScreenPoint(this.gravityTarget.transform.position);
-	}
+        this.transform.position = this.gravityTarget.transform.position;
+    }
 }

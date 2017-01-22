@@ -42,6 +42,10 @@ public class OutOfBoundsBehaviour : MonoBehaviour {
         //Hide/show sprite if gravityTarget is outside screen bounds
         sprender.enabled = this.gravityTarget.IsOutOfBounds();
 
+        //Hide/show children
+        foreach (Canvas c in GetComponentsInChildren<Canvas>())
+            c.enabled = sprender.enabled;
+
         if (sprender.enabled)
         {
             //Move indicator
