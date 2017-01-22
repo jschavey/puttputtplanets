@@ -76,6 +76,10 @@ public class GravityBody : MonoBehaviour {
             this.clickVisualization.transform.position = this.transform.position;
             this.clickVisualization.Grow();
         }
+
+        //Trigger sfx
+        AudioSource audio = this.GetComponent<AudioSource>();
+        audio.Play();
 	}
 
 	void OnMouseUp() {
@@ -87,7 +91,11 @@ public class GravityBody : MonoBehaviour {
             if (time > 0)
                 this.clickVisualization.Shrink();                   
         }
-	}
+
+        //Trigger sfx
+        AudioSource audio = this.GetComponent<AudioSource>();
+        audio.Stop();
+    }
 
 	void Update() {
 		transform.Rotate (0,0,50*Time.deltaTime); //rotates 50 degrees per second around z axis
